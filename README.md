@@ -70,6 +70,8 @@ not matching the performance of an optimized system libc.
 
 ## Exercise map
 
+See the [full numbered index](exercises/README.md) for links to every task.
+
 | Stage | Exercises | Focus |
 |---|---|---|
 | 1 | 01–10 | Logic, ASCII, integers, first pointers |
@@ -80,3 +82,12 @@ not matching the performance of an optimized system libc.
 
 Each numbered Markdown file gives the signature, requirements, library
 restrictions, and examples. Each C file is an independently buildable playground.
+
+## About the tests
+
+Tests check behavior, not your source-code choices: follow the stated algorithm,
+reuse, and library restrictions yourself. Passing the provided checks is useful
+feedback, not a proof of correctness. Sanitizers can catch memory errors that
+ordinary output comparisons cannot. Allocation failure and I/O failure handling
+are required by the contracts, but real resource failures are not forced by the
+default suites; size-overflow rejection is checked where practical.
