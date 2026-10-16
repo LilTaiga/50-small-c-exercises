@@ -19,6 +19,14 @@ playground. Tests use their own `main`; leave your playground inside the
 `#ifndef EXERCISE_TEST` guard. Keep trying until the tests pass, then move on.
 Select exercises with unpadded numbers: `N=1` through `N=50`.
 
+Compilation commands are hidden by default. Add `V=1` to show them:
+
+```sh
+make test N=1 V=1
+```
+
+Compiler warnings, errors, and test output are always visible.
+
 Tests print the active input before calling your code. Failures show expected
 and actual values: escaped strings, byte dumps with ASCII, integer arrays,
 binary/hexadecimal integers, and buffer-relative pointer offsets where useful.

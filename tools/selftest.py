@@ -99,6 +99,43 @@ class HarnessTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("N must be", result.stderr)
 
+    def make_with_mock_compiler(self, goal, verbose=False, fail=False):
+        # Exercise Make's command echoing without depending on student code.
+        code = "import sys; print('compiler diagnostic', file=sys.stderr)"
+        if fail:
+            code += "; sys.exit(1)"
+        compiler = shlex.join([os.sys.executable, "-c", code])
+        return subprocess.run(
+            ["make", "--no-print-directory", goal,
+             f"BUILD={self.directory.name}", "N=1", f"CC={compiler}",
+             f"V={int(verbose)}"],
+            cwd=ROOT, text=True, capture_output=True, timeout=10,
+        )
+
+    def test_compilation_is_quiet_by_default(self):
+        for goal in (str(Path(self.directory.name) / "01-run"),
+                     str(Path(self.directory.name) / "01-test"), "check"):
+            with self.subTest(goal=goal):
+                result = self.make_with_mock_compiler(goal)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("-Iinclude", result.stdout)
+                self.assertIn("compiler diagnostic", result.stderr)
+
+    def test_verbose_flag_shows_compilation_commands(self):
+        for goal in (str(Path(self.directory.name) / "01-run"),
+                     str(Path(self.directory.name) / "01-test"), "check"):
+            with self.subTest(goal=goal):
+                result = self.make_with_mock_compiler(goal, verbose=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("-Iinclude", result.stdout)
+                self.assertIn("compiler diagnostic", result.stderr)
+
+    def test_compiler_failures_remain_visible_in_quiet_mode(self):
+        result = self.make_with_mock_compiler(str(Path(self.directory.name) / "01-run"), fail=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("-Iinclude", result.stdout)
+        self.assertIn("compiler diagnostic", result.stderr)
+
     def test_all_exercises_have_playgrounds_and_instructions(self):
         for number in range(1, 51):
             source = (ROOT / "exercises" / f"{number:02}.c").read_text()
