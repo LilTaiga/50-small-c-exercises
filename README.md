@@ -49,6 +49,17 @@ Sanitizer support depends on your compiler/platform. Build output lives under
 `build/`; `make clean` removes only that generated directory. Override the
 compiler with `make CC=clang ...`.
 
+## Editor / language-server setup
+
+Open the repository root as your editor's workspace. `compile_flags.txt` tells
+clangd to use C11 and the same project include directories as the Makefile, so
+it can find `lib.h`, `exercises.h`, and the types provided by those headers
+(including `uint32_t` from `<stdint.h>`).
+
+If the editor was already open, restart its C language server or reload the
+workspace. For another language server, configure C11 and include paths for
+the repository root, `include/`, and `tests/` if it does not read this file.
+
 ## Reuse your work
 
 `lib.c` is linked into **every** playground and test executable. Declare reusable

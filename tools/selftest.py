@@ -197,6 +197,22 @@ class HarnessTests(unittest.TestCase):
                 self.assertIn(f"make run N={number}", instructions)
                 self.assertIn(f"make test N={number}", instructions)
 
+    def test_editor_flags_resolve_project_headers_and_fixed_width_types(self):
+        source = Path(self.directory.name) / "editor-headers.c"
+        source.write_text(
+            '#include "exercises.h"\n'
+            '#include "lib.h"\n'
+            '#include "support.h"\n'
+            'uint32_t editor_value = UINT32_C(42);\n'
+        )
+        compiler = shlex.split(os.environ.get("CC", "cc"))
+        flags = (ROOT / "compile_flags.txt").read_text().splitlines()
+        result = subprocess.run(
+            compiler + flags + ["-Werror", "-fsyntax-only", str(source)],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
