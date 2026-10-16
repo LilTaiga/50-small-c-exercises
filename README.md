@@ -94,13 +94,13 @@ not matching the performance of an optimized system libc.
 
 See the [full numbered index](exercises/README.md) for links to every task.
 
-| Stage | Exercises | Focus |
-|---|---|---|
-| 1 | 01–10 | Logic, ASCII, integers, first pointers |
-| 2 | 11–20 | Strings and pointer traversal |
-| 3 | 21–30 | Raw memory, searching, tokenization |
-| 4 | 31–40 | Parsing, allocation, ownership |
-| 5 | 41–50 | Bits, byte order, callbacks, containers, I/O |
+| Stage | Exercises | Focus                                        |
+| ----- | --------- | -------------------------------------------- |
+| 1     | 01–10     | Logic, ASCII, integers, first pointers       |
+| 2     | 11–20     | Strings and pointer traversal                |
+| 3     | 21–30     | Raw memory, searching, tokenization          |
+| 4     | 31–40     | Parsing, allocation, ownership               |
+| 5     | 41–50     | Bits, byte order, callbacks, containers, I/O |
 
 Each numbered Markdown file gives the signature, requirements, library
 restrictions, and examples. Each C file is an independently buildable playground.
