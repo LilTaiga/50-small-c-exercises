@@ -30,6 +30,7 @@ Compiler warnings, errors, and test output are always visible.
 Test output shows only failing cases and the overall summary. Failures include
 the input, expected and actual values: escaped strings, byte dumps with ASCII, integer arrays,
 binary/hexadecimal integers, and buffer-relative pointer offsets where useful.
+Boolean results show only `true` or `false`, without byte or hexadecimal output.
 Comparisons follow the function contract (for example, string comparison checks
 the sign, not an implementation-specific return value).
 

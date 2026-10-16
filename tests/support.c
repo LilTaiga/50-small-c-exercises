@@ -77,6 +77,15 @@ void test_bounded_pair_case(const char *a, const char *b, size_t count)
     fflush(stdout);
 }
 
+void expect_bool(bool expected, bool actual, const char *expression, int line)
+{
+    ++checks;
+    if (expected == actual) return;
+    failure(expression, line);
+    printf("      expected: %s\n      actual:   %s\n",
+           expected ? "true" : "false", actual ? "true" : "false");
+}
+
 void expect_int(intmax_t expected, intmax_t actual, const char *expression, int line)
 {
     ++checks;

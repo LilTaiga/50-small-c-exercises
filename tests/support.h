@@ -9,6 +9,7 @@ void test_case(const char *input);
 void test_string_case(const char *input);
 void test_pair_case(const char *a, const char *b);
 void test_bounded_pair_case(const char *a, const char *b, size_t count);
+void expect_bool(bool expected, bool actual, const char *expression, int line);
 void expect_int(intmax_t expected, intmax_t actual, const char *expression, int line);
 void expect_uint(uintmax_t expected, uintmax_t actual, const char *expression, int line);
 void expect_parse(ParseResult expected, ParseResult actual, const char *expression, int line);
@@ -24,6 +25,7 @@ void run_tests(void);
 #define STRING_CASE(input) test_string_case(input)
 #define PAIR_CASE(a, b) test_pair_case((a), (b))
 #define BOUNDED_PAIR_CASE(a, b, count) test_bounded_pair_case((a), (b), (count))
+#define BOOL(expected, actual) expect_bool((expected), (actual), #actual, __LINE__)
 #define INT(expected, actual) expect_int((expected), (actual), #actual, __LINE__)
 #define UINT(expected, actual) expect_uint((expected), (actual), #actual, __LINE__)
 #define PARSE(expected, actual) expect_parse((expected), (actual), #actual, __LINE__)
@@ -31,6 +33,6 @@ void run_tests(void);
 #define BYTES(expected, actual, count) expect_bytes((expected), (actual), (count), #actual, __LINE__)
 #define ARRAY(expected, actual, count) expect_array((expected), (actual), (count), #actual, __LINE__)
 #define POINTER(base, extent, expected, actual) expect_pointer((base), (extent), (expected), (actual), #actual, __LINE__)
-#define TRUE(actual) INT(1, !!(actual))
+#define TRUE(actual) BOOL(true, actual)
 
 #endif

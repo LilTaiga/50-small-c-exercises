@@ -12,6 +12,14 @@ int main(void)
     if (!strcmp(mode, "crash")) { raise(SIGSEGV); return 2; }
     if (!strcmp(mode, "hang")) { for (;;) { } }
     if (!strcmp(mode, "exit")) return 7;
+    if (!strcmp(mode, "bool-fail")) {
+        BOOL(true, false); BOOL(false, 17); TRUE(0);
+        return test_summary();
+    }
+    if (!strcmp(mode, "bool-pass")) {
+        BOOL(true, 17); BOOL(true, -9); BOOL(false, 0); TRUE(-1);
+        return test_summary();
+    }
     if (!strcmp(mode, "mixed")) {
         CASE("passing before"); INT(1, 1);
         CASE("failing middle"); INT(1, 2); INT(3, 4);

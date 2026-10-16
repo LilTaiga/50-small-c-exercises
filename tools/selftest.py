@@ -53,6 +53,22 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(result.stdout.count("    FAIL line "), 2)
         self.assertIn("FAIL: 2/4 checks passed across 4 cases.", result.stdout)
 
+    def test_boolean_failures_use_only_true_and_false(self):
+        result = self.run_fixture("bool-fail")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("expected: true\n      actual:   false", result.stdout)
+        self.assertIn("expected: false\n      actual:   true", result.stdout)
+        self.assertNotIn("byte", result.stdout)
+        self.assertNotIn("0x", result.stdout)
+        self.assertNotIn("0b", result.stdout)
+        self.assertIn("FAIL: 0/3 checks", result.stdout)
+
+    def test_boolean_checks_accept_any_nonzero_true_value(self):
+        result = self.run_fixture("bool-pass")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("PASS: 4/4 checks", result.stdout)
+        self.assertNotIn("Case ", result.stdout)
+
     def test_failed_inputs_remain_escaped(self):
         result = self.run_fixture("escaped-input")
         self.assertEqual(result.returncode, 1)

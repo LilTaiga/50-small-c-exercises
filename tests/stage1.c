@@ -16,13 +16,13 @@ void run_tests(void)
         snprintf(label, sizeof label, "ASCII integer %d (0x%X)", c, (unsigned)c);
         CASE(label);
 #if EXERCISE == 1
-        INT(c >= '0' && c <= '9', !!my_isdigit(c));
+        BOOL(c >= '0' && c <= '9', my_isdigit(c));
 #elif EXERCISE == 2
-        INT((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'), !!my_isalpha(c));
+        BOOL((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'), my_isalpha(c));
 #elif EXERCISE == 3
-        INT((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'), !!my_isalnum(c));
+        BOOL((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'), my_isalnum(c));
 #elif EXERCISE == 4
-        INT(c == ' ' || (c >= '\t' && c <= '\r'), !!my_isspace(c));
+        BOOL(c == ' ' || (c >= '\t' && c <= '\r'), my_isspace(c));
 #elif EXERCISE == 5
         INT(c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c, my_toupper(c));
 #else
