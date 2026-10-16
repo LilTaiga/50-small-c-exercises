@@ -39,8 +39,42 @@ class HarnessTests(unittest.TestCase):
         result = self.run_fixture("pass")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PASS: 11/11 checks", result.stdout)
-        self.assertIn('"a\\nb"', result.stdout)
-        self.assertIn('"\\xFF"', result.stdout)
+        self.assertNotIn("Case ", result.stdout)
+        self.assertNotIn("input:", result.stdout)
+
+    def test_only_failing_cases_are_shown(self):
+        result = self.run_fixture("mixed")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("input: failing middle", result.stdout)
+        self.assertNotIn("input: passing before", result.stdout)
+        self.assertNotIn("input: passing after", result.stdout)
+        self.assertNotIn("input: framework fixture", result.stdout)
+        self.assertEqual(result.stdout.count("Case "), 1)
+        self.assertEqual(result.stdout.count("    FAIL line "), 2)
+        self.assertIn("FAIL: 2/4 checks passed across 4 cases.", result.stdout)
+
+    def test_failed_inputs_remain_escaped(self):
+        result = self.run_fixture("escaped-input")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('input: "a\\nb\\t\\\"\\\\"', result.stdout)
+        self.assertIn('a="\\xFF", b="\\x7F"', result.stdout)
+        self.assertIn('a="a\\nb", b="a\\tb", count=2', result.stdout)
+
+    def test_interrupted_cases_are_shown_without_passing_cases(self):
+        for mode in ("mixed-crash", "mixed-hang"):
+            with self.subTest(mode=mode):
+                result = self.run_fixture(mode, "0.1" if mode == "mixed-hang" else "2")
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("input: failing middle", result.stdout)
+                self.assertIn("input: active input before interruption", result.stdout)
+                self.assertNotIn("input: passing before", result.stdout)
+                self.assertNotIn("input: framework fixture", result.stdout)
+
+    def test_stderr_diagnostics_remain_visible(self):
+        result = self.run_fixture("stderr")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("diagnostic on stderr", result.stderr)
+        self.assertNotIn("Case ", result.stdout)
 
     def test_failures_have_multiple_readable_representations(self):
         result = self.run_fixture("fail")
@@ -63,6 +97,7 @@ class HarnessTests(unittest.TestCase):
         result = self.run_fixture("hang", "0.1")
         self.assertEqual(result.returncode, 1)
         self.assertIn("timed out", result.stdout)
+        self.assertIn("input: framework fixture", result.stdout)
 
     def test_exit_status_is_preserved(self):
         self.assertEqual(self.run_fixture("exit").returncode, 7)

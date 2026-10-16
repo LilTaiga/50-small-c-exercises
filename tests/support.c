@@ -55,13 +55,25 @@ void test_string_case(const char *input)
     fflush(stdout);
 }
 
-void test_pair_case(const char *a, const char *b)
+static void pair_input(const char *a, const char *b)
 {
     printf("\n  Case %zu | input: a=", ++cases);
     quoted(a);
     fputs(", b=", stdout);
     quoted(b);
+}
+
+void test_pair_case(const char *a, const char *b)
+{
+    pair_input(a, b);
     putchar('\n');
+    fflush(stdout);
+}
+
+void test_bounded_pair_case(const char *a, const char *b, size_t count)
+{
+    pair_input(a, b);
+    printf(", count=%zu\n", count);
     fflush(stdout);
 }
 

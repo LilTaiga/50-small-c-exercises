@@ -100,9 +100,9 @@ void run_tests(void)
     char a[] = ",red;;green,blue,", *state = NULL;
     CASE("string=\",red;;green,blue,\", delimiters=\",;\", first call");
     char *p = next_token(a, ",;", &state); POINTER(a, sizeof a, a + 1, p); STRING("red", p);
-    CASE("continue same scan"); p = next_token(NULL, ",;", &state); POINTER(a, sizeof a, a + 6, p); STRING("green", p);
-    CASE("continue same scan"); p = next_token(NULL, ",;", &state); POINTER(a, sizeof a, a + 12, p); STRING("blue", p);
-    CASE("exhausted scan, twice"); STRING(NULL, next_token(NULL, ",;", &state));
+    CASE("string=\",red;;green,blue,\", delimiters=\",;\", second call"); p = next_token(NULL, ",;", &state); POINTER(a, sizeof a, a + 6, p); STRING("green", p);
+    CASE("string=\",red;;green,blue,\", delimiters=\",;\", third call"); p = next_token(NULL, ",;", &state); POINTER(a, sizeof a, a + 12, p); STRING("blue", p);
+    CASE("string=\",red;;green,blue,\", delimiters=\",;\", exhausted scan twice"); STRING(NULL, next_token(NULL, ",;", &state));
     POINTER(NULL, 0, NULL, state); STRING(NULL, next_token(NULL, ",;", &state));
     char b[] = "a:b,c", c[] = "x/y", *bs = NULL, *cs = NULL;
     CASE("interleave a:b,c and x/y with separate states; change first delimiter set");

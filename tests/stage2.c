@@ -30,12 +30,12 @@ void run_tests(void)
     const char *a[] = {"cat", "cat", "", "a", "abc", "abd", "\xFF", "\x7F"};
     const char *b[] = {"dog", "cat", "a", "", "abcd", "abc", "\x7F", "\xFF"};
     for (size_t i = 0; i < sizeof a / sizeof *a; ++i) {
-        PAIR_CASE(a[i], b[i]);
 #if EXERCISE == 13
+        PAIR_CASE(a[i], b[i]);
         INT(sign_of(strcmp(a[i], b[i])), sign_of(my_strcmp(a[i], b[i])));
 #else
         for (size_t count = 0; count <= 6; ++count) {
-            char label[64]; snprintf(label, sizeof label, "pair %zu, count=%zu", i, count); CASE(label);
+            BOUNDED_PAIR_CASE(a[i], b[i], count);
             INT(sign_of(strncmp(a[i], b[i], count)), sign_of(my_strncmp(a[i], b[i], count)));
         }
 #endif

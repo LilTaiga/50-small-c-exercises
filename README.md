@@ -27,8 +27,8 @@ make test N=1 V=1
 
 Compiler warnings, errors, and test output are always visible.
 
-Tests print the active input before calling your code. Failures show expected
-and actual values: escaped strings, byte dumps with ASCII, integer arrays,
+Test output shows only failing cases and the overall summary. Failures include
+the input, expected and actual values: escaped strings, byte dumps with ASCII, integer arrays,
 binary/hexadecimal integers, and buffer-relative pointer offsets where useful.
 Comparisons follow the function contract (for example, string comparison checks
 the sign, not an implementation-specific return value).
@@ -42,6 +42,8 @@ make selftest            # Check test infrastructure, not student solutions
 
 Tests time out after 5 seconds; override with `TEST_TIMEOUT=10 make test N=50`.
 A crashing exercise is reported as a failure, not as a successful test run.
+Crashes and timeouts also show the active case's input. Compiler and sanitizer
+diagnostics remain visible.
 Sanitizer support depends on your compiler/platform. Build output lives under
 `build/`; `make clean` removes only that generated directory. Override the
 compiler with `make CC=clang ...`.

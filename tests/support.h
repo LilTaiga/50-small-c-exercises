@@ -8,6 +8,7 @@
 void test_case(const char *input);
 void test_string_case(const char *input);
 void test_pair_case(const char *a, const char *b);
+void test_bounded_pair_case(const char *a, const char *b, size_t count);
 void expect_int(intmax_t expected, intmax_t actual, const char *expression, int line);
 void expect_uint(uintmax_t expected, uintmax_t actual, const char *expression, int line);
 void expect_parse(ParseResult expected, ParseResult actual, const char *expression, int line);
@@ -22,6 +23,7 @@ void run_tests(void);
 #define CASE(input) test_case(input)
 #define STRING_CASE(input) test_string_case(input)
 #define PAIR_CASE(a, b) test_pair_case((a), (b))
+#define BOUNDED_PAIR_CASE(a, b, count) test_bounded_pair_case((a), (b), (count))
 #define INT(expected, actual) expect_int((expected), (actual), #actual, __LINE__)
 #define UINT(expected, actual) expect_uint((expected), (actual), #actual, __LINE__)
 #define PARSE(expected, actual) expect_parse((expected), (actual), #actual, __LINE__)

@@ -12,6 +12,29 @@ int main(void)
     if (!strcmp(mode, "crash")) { raise(SIGSEGV); return 2; }
     if (!strcmp(mode, "hang")) { for (;;) { } }
     if (!strcmp(mode, "exit")) return 7;
+    if (!strcmp(mode, "mixed")) {
+        CASE("passing before"); INT(1, 1);
+        CASE("failing middle"); INT(1, 2); INT(3, 4);
+        CASE("passing after"); INT(5, 5);
+        return test_summary();
+    }
+    if (!strcmp(mode, "mixed-crash") || !strcmp(mode, "mixed-hang")) {
+        CASE("passing before"); INT(1, 1);
+        CASE("failing middle"); INT(1, 2);
+        CASE("active input before interruption");
+        if (!strcmp(mode, "mixed-crash")) { raise(SIGSEGV); return 2; }
+        for (;;) { }
+    }
+    if (!strcmp(mode, "escaped-input")) {
+        STRING_CASE("a\nb\t\"\\"); INT(1, 2);
+        PAIR_CASE("\xFF", "\x7F"); INT(3, 4);
+        BOUNDED_PAIR_CASE("a\nb", "a\tb", 2); INT(5, 6);
+        return test_summary();
+    }
+    if (!strcmp(mode, "stderr")) {
+        fputs("diagnostic on stderr\n", stderr);
+        return test_summary();
+    }
     if (!strcmp(mode, "fail")) {
         unsigned char actual[] = {0x41, 0, 0xFF}, expected[] = {0x42, 0x0A, 0x7F};
         int a[] = {1, 2, 3}, b[] = {1, 9, 3};
