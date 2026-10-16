@@ -1,4 +1,5 @@
 #include "support.h"
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -29,6 +30,7 @@ static void character(unsigned char c)
     case '\f': fputs("\\f", stdout); break;
     case '\\': fputs("\\\\", stdout); break;
     case '"': fputs("\\\"", stdout); break;
+    case '\'': fputs("\\'", stdout); break;
     default:
         if (c >= 32 && c <= 126) putchar(c);
         else printf("\\x%02X", (unsigned)c);
@@ -45,22 +47,40 @@ static void quoted(const char *s)
     if (i == 128) fputs("... (display limited to 128 bytes)", stdout);
 }
 
+void test_string_case(const char *input)
+{
+    printf("\n  Case %zu | input: ", ++cases);
+    quoted(input);
+    putchar('\n');
+    fflush(stdout);
+}
+
+void test_pair_case(const char *a, const char *b)
+{
+    printf("\n  Case %zu | input: a=", ++cases);
+    quoted(a);
+    fputs(", b=", stdout);
+    quoted(b);
+    putchar('\n');
+    fflush(stdout);
+}
+
 void expect_int(intmax_t expected, intmax_t actual, const char *expression, int line)
 {
     ++checks;
     if (expected == actual) return;
     failure(expression, line);
     printf("      expected: %" PRIdMAX, expected);
-    if (expected >= 0 && expected <= 255) { fputs(" (byte ", stdout); character((unsigned char)expected); printf(", 0x%02" PRIXMAX ")", (uintmax_t)expected); }
+    if (expected >= 0 && expected <= 255) { fputs(" (byte '", stdout); character((unsigned char)expected); printf("', 0x%02" PRIXMAX ")", (uintmax_t)expected); }
     printf("\n      actual:   %" PRIdMAX, actual);
-    if (actual >= 0 && actual <= 255) { fputs(" (byte ", stdout); character((unsigned char)actual); printf(", 0x%02" PRIXMAX ")", (uintmax_t)actual); }
+    if (actual >= 0 && actual <= 255) { fputs(" (byte '", stdout); character((unsigned char)actual); printf("', 0x%02" PRIXMAX ")", (uintmax_t)actual); }
     putchar('\n');
 }
 
 static void unsigned_value(uintmax_t value)
 {
     printf("%" PRIuMAX " (0x%" PRIXMAX ", 0b", value, value);
-    unsigned bits = (unsigned)(sizeof value * 8);
+    unsigned bits = (unsigned)(sizeof value * CHAR_BIT);
     bool started = false;
     for (unsigned i = bits; i > 0; --i) {
         unsigned bit = (unsigned)((value >> (i - 1)) & 1);
@@ -78,6 +98,25 @@ void expect_uint(uintmax_t expected, uintmax_t actual, const char *expression, i
     fputs("\n      actual:   ", stdout); unsigned_value(actual); putchar('\n');
 }
 
+static const char *parse_name(ParseResult result)
+{
+    switch (result) {
+    case PARSE_OK: return "PARSE_OK";
+    case PARSE_INVALID: return "PARSE_INVALID";
+    case PARSE_OVERFLOW: return "PARSE_OVERFLOW";
+    default: return "unknown parse status";
+    }
+}
+
+void expect_parse(ParseResult expected, ParseResult actual, const char *expression, int line)
+{
+    ++checks;
+    if (expected == actual) return;
+    failure(expression, line);
+    printf("      expected: %s (%d)\n      actual:   %s (%d)\n",
+           parse_name(expected), (int)expected, parse_name(actual), (int)actual);
+}
+
 void expect_string(const char *expected, const char *actual, const char *expression, int line)
 {
     ++checks;
@@ -88,7 +127,8 @@ void expect_string(const char *expected, const char *actual, const char *express
     if (expected && actual) {
         size_t i = 0;
         while (expected[i] && actual[i] && expected[i] == actual[i]) ++i;
-        printf("      first differing byte: %zu\n", i);
+        printf("      first differing byte: %zu (expected 0x%02X, actual 0x%02X)\n",
+               i, (unsigned)(unsigned char)expected[i], (unsigned)(unsigned char)actual[i]);
     }
 }
 
@@ -114,7 +154,8 @@ void expect_bytes(const void *expected, const void *actual, size_t count, const 
         const unsigned char *a = expected, *b = actual;
         size_t i = 0;
         while (i < count && a[i] == b[i]) ++i;
-        printf("      first differing byte: %zu\n", i);
+        printf("      first differing byte: %zu (expected 0x%02X, actual 0x%02X)\n",
+               i, (unsigned)a[i], (unsigned)b[i]);
     }
 }
 
@@ -139,7 +180,7 @@ void expect_array(const int *expected, const int *actual, size_t count, const ch
     failure(expression, line);
     fputs("      expected: ", stdout); array_dump(expected, count);
     fputs("      actual:   ", stdout); array_dump(actual, count);
-    if (expected && actual) printf("      first differing index: %zu\n", i);
+    if (expected && actual) printf("      first differing index: %zu (expected %d, actual %d)\n", i, expected[i], actual[i]);
 }
 
 static void pointer_dump(const void *base, size_t extent, const void *pointer)

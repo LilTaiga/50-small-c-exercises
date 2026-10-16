@@ -9,7 +9,7 @@ void run_tests(void)
     const char *inputs[] = {"  -42 cats", "123abc", "\t\n\v\f\r +17", "", "+", "-", "abc", "--1", "+-1", "0007", "-0", "  - 2"};
     const int expected[] = {-42, 123, 17, 0, 0, 0, 0, 0, 0, 7, 0, 0};
     for (size_t i = 0; i < 12; ++i) {
-        char label[100]; snprintf(label, sizeof label, "string #%zu: decimal-prefix conversion", i); CASE(label);
+        STRING_CASE(inputs[i]);
         INT(expected[i], my_atoi(inputs[i]));
     }
     char limit[80]; snprintf(limit, sizeof limit, "%d", INT_MIN); CASE(limit); INT(INT_MIN, my_atoi(limit));
@@ -21,19 +21,25 @@ void run_tests(void)
     const char *valid[] = {"42", "-42", "+17", "0007", "-0"};
     const int expected[] = {42, -42, 17, 7, 0};
     for (size_t i = 0; i < 5; ++i) {
-        int value = 1234; CASE(valid[i]); INT(PARSE_OK, parse_int(valid[i], &value)); INT(expected[i], value);
+        int value = 1234; STRING_CASE(valid[i]); PARSE(PARSE_OK, parse_int(valid[i], &value)); INT(expected[i], value);
     }
     const char *invalid[] = {"", "+", "-", " 1", "1 ", "1x", "--1", "+-2"};
     for (size_t i = 0; i < 8; ++i) {
-        int value = 1234; CASE(invalid[i]); INT(PARSE_INVALID, parse_int(invalid[i], &value)); INT(1234, value);
+        int value = 1234; STRING_CASE(invalid[i]); PARSE(PARSE_INVALID, parse_int(invalid[i], &value)); INT(1234, value);
     }
     char text[100]; int value = 1234;
-    snprintf(text, sizeof text, "%d", INT_MIN); CASE(text); INT(PARSE_OK, parse_int(text, &value)); INT(INT_MIN, value);
-    snprintf(text, sizeof text, "%d", INT_MAX); CASE(text); INT(PARSE_OK, parse_int(text, &value)); INT(INT_MAX, value);
+    snprintf(text, sizeof text, "%d", INT_MIN); CASE(text); PARSE(PARSE_OK, parse_int(text, &value)); INT(INT_MIN, value);
+    snprintf(text, sizeof text, "%d", INT_MAX); CASE(text); PARSE(PARSE_OK, parse_int(text, &value)); INT(INT_MAX, value);
     snprintf(text, sizeof text, "%d0", INT_MAX); CASE(text); value = 1234;
-    INT(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
+    PARSE(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
     snprintf(text, sizeof text, "%d0", INT_MIN); CASE(text);
-    INT(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
+    PARSE(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
+    snprintf(text, sizeof text, "%ju", (uintmax_t)INT_MAX + 1); CASE(text);
+    PARSE(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
+    snprintf(text, sizeof text, "-%ju", (uintmax_t)(-(INT_MIN + 1)) + 2); CASE(text);
+    PARSE(PARSE_OVERFLOW, parse_int(text, &value)); INT(1234, value);
+    CASE("syntactically invalid number after a long digit sequence");
+    PARSE(PARSE_INVALID, parse_int("999999999999999999999999999999999999x", &value)); INT(1234, value);
 }
 #elif EXERCISE == 33
 void run_tests(void)
@@ -61,26 +67,35 @@ void run_tests(void)
     const unsigned expected[] = {255, 255, 11, 35, 0, 15};
     for (size_t i = 0; i < 6; ++i) {
         unsigned value = 77; char label[80]; snprintf(label, sizeof label, "string=%s, base=%u", valid[i], bases[i]); CASE(label);
-        INT(PARSE_OK, parse_uint_base(valid[i], bases[i], &value)); UINT(expected[i], value);
+        PARSE(PARSE_OK, parse_uint_base(valid[i], bases[i], &value)); UINT(expected[i], value);
     }
     const char *invalid[] = {"", "2", "0xFF", "-1", "+1", " 1", "1 ", "1"};
     const unsigned bad_bases[] = {10, 2, 16, 10, 10, 10, 10, 37};
     for (size_t i = 0; i < 8; ++i) {
         unsigned value = 77; char label[80]; snprintf(label, sizeof label, "string=%s, base=%u", invalid[i], bad_bases[i]); CASE(label);
-        INT(PARSE_INVALID, parse_uint_base(invalid[i], bad_bases[i], &value)); UINT(77, value);
+        PARSE(PARSE_INVALID, parse_uint_base(invalid[i], bad_bases[i], &value)); UINT(77, value);
     }
-    unsigned value = 77; CASE("string=1, base=1"); INT(PARSE_INVALID, parse_uint_base("1", 1, &value)); UINT(77, value);
+    unsigned value = 77; CASE("string=1, base=1"); PARSE(PARSE_INVALID, parse_uint_base("1", 1, &value)); UINT(77, value);
     char text[100]; snprintf(text, sizeof text, "%u", UINT_MAX); CASE(text);
-    INT(PARSE_OK, parse_uint_base(text, 10, &value)); UINT(UINT_MAX, value);
+    PARSE(PARSE_OK, parse_uint_base(text, 10, &value)); UINT(UINT_MAX, value);
     snprintf(text, sizeof text, "%u0", UINT_MAX); value = 77; CASE(text);
-    INT(PARSE_OVERFLOW, parse_uint_base(text, 10, &value)); UINT(77, value);
+    PARSE(PARSE_OVERFLOW, parse_uint_base(text, 10, &value)); UINT(77, value);
+    /* Decimal increment avoids assuming a wider unsigned integer type. */
+    snprintf(text, sizeof text, "%u", UINT_MAX);
+    size_t end = strlen(text);
+    while (end && text[end - 1] == '9') text[--end] = '0';
+    if (end) ++text[end - 1];
+    else { size_t length = strlen(text); memmove(text + 1, text, length + 1); text[0] = '1'; }
+    CASE(text); PARSE(PARSE_OVERFLOW, parse_uint_base(text, 10, &value)); UINT(77, value);
+    CASE("base=10, long digit sequence followed by x");
+    PARSE(PARSE_INVALID, parse_uint_base("999999999999999999999999999999999999x", 10, &value)); UINT(77, value);
 }
 #elif EXERCISE == 35
 void run_tests(void)
 {
     const char *inputs[] = {"hello", "", "a\nb"};
     for (size_t i = 0; i < 3; ++i) {
-        char source[16]; strcpy(source, inputs[i]); CASE(i == 0 ? "hello" : i == 1 ? "empty string" : "a\\nb");
+        char source[16]; strcpy(source, inputs[i]); STRING_CASE(inputs[i]);
         char *copy = my_strdup(source); STRING(inputs[i], copy);
         if (copy) { TRUE(copy != source); if (*copy) copy[0] = '!'; STRING(inputs[i], source); free(copy); }
     }
@@ -138,7 +153,7 @@ void run_tests(void)
     const char *expected[][5] = {{"red", "green", "blue"}, {"", "a", "", "b", ""}, {""}, {"whole"}};
     const size_t counts[] = {3, 5, 1, 1};
     for (size_t i = 0; i < 4; ++i) {
-        char source[32]; strcpy(source, inputs[i]); CASE(inputs[i]); size_t count = 999;
+        char source[32]; strcpy(source, inputs[i]); STRING_CASE(inputs[i]); size_t count = 999;
         char **fields = string_split(source, ',', &count); UINT(counts[i], count); TRUE(fields != NULL);
         if (fields && count == counts[i]) {
             for (size_t j = 0; j < count; ++j) STRING(expected[i][j], fields[j]);

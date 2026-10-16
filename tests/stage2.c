@@ -30,8 +30,7 @@ void run_tests(void)
     const char *a[] = {"cat", "cat", "", "a", "abc", "abd", "\xFF", "\x7F"};
     const char *b[] = {"dog", "cat", "a", "", "abcd", "abc", "\x7F", "\xFF"};
     for (size_t i = 0; i < sizeof a / sizeof *a; ++i) {
-        char input[128]; snprintf(input, sizeof input, "pair %zu: a=\"%s\", b=\"%s\"", i, a[i], b[i]);
-        CASE(input);
+        PAIR_CASE(a[i], b[i]);
 #if EXERCISE == 13
         INT(sign_of(strcmp(a[i], b[i])), sign_of(my_strcmp(a[i], b[i])));
 #else
@@ -109,7 +108,7 @@ void run_tests(void)
     for (size_t i = 0; i < 6; ++i) {
         char actual[16], expected[16]; memset(actual, 0x55, sizeof actual); strcpy(actual, inputs[i]);
         memcpy(expected, actual, sizeof actual); strcpy(expected, outputs[i]);
-        char label[80]; snprintf(label, sizeof label, "string #%zu, length=%zu", i, strlen(inputs[i])); CASE(label);
+        STRING_CASE(inputs[i]);
         reverse_string(actual); BYTES(expected, actual, sizeof actual);
     }
 }

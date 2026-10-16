@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-CC = cc
+CC ?= cc
 PYTHON ?= python3
 CPPFLAGS += -Iinclude -I. -Itests
 CFLAGS ?= -std=c11 -Wall -Wextra -Wpedantic -g -O0
@@ -9,12 +9,12 @@ IDS := $(shell printf '%02d\n' $(NUMBERS))
 BUILD := build/default
 ifeq ($(SANITIZE),1)
 BUILD := build/sanitized
-CFLAGS += -fsanitize=address,undefined -fno-omit-frame-pointer
-LDFLAGS += -fsanitize=address,undefined
+override CFLAGS += -fsanitize=address,undefined -fno-omit-frame-pointer
+override LDFLAGS += -fsanitize=address,undefined
 endif
 
 ifneq ($(filter run test,$(MAKECMDGOALS)),)
-ifeq ($(filter $(N),$(NUMBERS)),)
+ifneq ($(filter $(N),$(NUMBERS)),$(N))
 $(error Choose an exercise: make run N=1 or make test N=1 (N must be 1 through 50))
 endif
 ifneq ($(words $(N)),1)
@@ -44,6 +44,7 @@ $(BUILD)/%-test: exercises/%.c lib.c $(HEADERS) $(TEST_SOURCES) FORCE
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DEXERCISE_TEST -DEXERCISE=$(shell expr $* + 0) $< lib.c $(TEST_SOURCES) $(LDFLAGS) $(LDLIBS) -o $@
 
 check:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fsyntax-only tests/framework_fixture.c tests/support.c
 	@set -e; for id in $(IDS); do \
 	  n=$$(expr $$id + 0); \
 	  $(CC) $(CPPFLAGS) $(CFLAGS) -fsyntax-only exercises/$$id.c lib.c; \

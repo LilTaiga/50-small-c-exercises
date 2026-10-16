@@ -1,0 +1,114 @@
+"""Regression tests for the harness, independent of student implementations."""
+
+import os
+from pathlib import Path
+import shlex
+import subprocess
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+class HarnessTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        (ROOT / "build").mkdir(exist_ok=True)
+        cls.directory = tempfile.TemporaryDirectory(prefix="selftest-", dir=ROOT / "build")
+        cls.binary = Path(cls.directory.name) / "fixture"
+        compiler = shlex.split(os.environ.get("CC", "cc"))
+        flags = shlex.split(os.environ.get("CFLAGS", "-std=c11 -Wall -Wextra -Wpedantic -Werror"))
+        sources = ["tests/support.c", "tests/framework_fixture.c"]
+        includes = ["-Iinclude", "-Itests"]
+        # Check types/syntax first, then build the executable.
+        subprocess.run(compiler + flags + includes + ["-fsyntax-only"] + sources, cwd=ROOT, check=True)
+        subprocess.run(compiler + flags + includes + sources + ["-o", str(cls.binary)], cwd=ROOT, check=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.directory.cleanup()
+
+    def run_fixture(self, mode, timeout="2"):
+        env = {**os.environ, "FRAMEWORK_MODE": mode, "TEST_TIMEOUT": timeout}
+        return subprocess.run(
+            [os.sys.executable, "tools/run_tests.py", str(self.binary)],
+            cwd=ROOT, env=env, text=True, capture_output=True, timeout=10,
+        )
+
+    def test_correct_assertions_pass(self):
+        result = self.run_fixture("pass")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("PASS: 11/11 checks", result.stdout)
+        self.assertIn('"a\\nb"', result.stdout)
+        self.assertIn('"\\xFF"', result.stdout)
+
+    def test_failures_have_multiple_readable_representations(self):
+        result = self.run_fixture("fail")
+        self.assertEqual(result.returncode, 1)
+        for marker in ("expected:", "actual:", "'A'", "0x41", "0b10100101",
+                       '"a\\n\\t\\\\\\\""', "42 0A 7F", "|B..|", "[1, 9, 3]",
+                       "first differing index: 1", "buffer + 1", "buffer + 2", "NULL",
+                       "PARSE_OK (0)", "PARSE_OVERFLOW (2)", "FAIL: 0/12 checks",
+                       "first differing byte: 79 (expected 0x00, actual 0xFF)",
+                       "first differing index: 39 (expected 0, actual 42)"):
+            self.assertIn(marker, result.stdout)
+
+    def test_crashes_are_failures(self):
+        result = self.run_fixture("crash")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("SIGSEGV", result.stdout)
+        self.assertIn("input: framework fixture", result.stdout)
+
+    def test_infinite_loops_time_out(self):
+        result = self.run_fixture("hang", "0.1")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("timed out", result.stdout)
+
+    def test_exit_status_is_preserved(self):
+        self.assertEqual(self.run_fixture("exit").returncode, 7)
+
+    def test_invalid_timeouts_are_rejected(self):
+        for value in ("0", "-1", "nan", "inf", "nope"):
+            with self.subTest(value=value):
+                result = self.run_fixture("pass", value)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("positive finite", result.stderr)
+
+    def test_missing_executable_is_reported(self):
+        result = subprocess.run(
+            [os.sys.executable, "tools/run_tests.py", str(self.binary) + "-missing"],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Cannot run tests:", result.stderr)
+
+    def test_runner_requires_one_executable_argument(self):
+        result = subprocess.run(
+            [os.sys.executable, "tools/run_tests.py"], cwd=ROOT, text=True, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Usage:", result.stderr)
+
+    def test_invalid_exercise_numbers_are_rejected(self):
+        for value in (None, "0", "51", "01", "abc", "1 2", "%", "1%"):
+            command = ["make", "--no-print-directory", "-n", "test"]
+            if value is not None:
+                command.append(f"N={value}")
+            result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
+            with self.subTest(value=value):
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("N must be", result.stderr)
+
+    def test_all_exercises_have_playgrounds_and_instructions(self):
+        for number in range(1, 51):
+            source = (ROOT / "exercises" / f"{number:02}.c").read_text()
+            instructions = (ROOT / "exercises" / f"{number:02}.md").read_text()
+            with self.subTest(number=number):
+                self.assertIn("#ifndef EXERCISE_TEST", source)
+                self.assertIn("int main(void)", source)
+                self.assertIn(f"make run N={number}", instructions)
+                self.assertIn(f"make test N={number}", instructions)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
