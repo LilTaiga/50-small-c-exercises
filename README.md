@@ -1,115 +1,37 @@
-# C, one function at a time
+# 50 small C exercises
 
-50 small exercises for learning C, pointers, memory, and reuse. Implement the
-functions yourself; **the supplied stubs are supposed to fail their tests**.
-No solutions are included.
+I made this repo as a small beginner playground, for [Gabe Sampson](https://www.youtube.com/@gabe_sampson/featured) to try it out. \
+It comes with prepared exercises and a testing suite for ease running and testing. Feel free to clone this repo and try the exercises yourself, if you feel like.
 
-## Start here
+## Requirements
 
-You need a C11 compiler (`cc`, GCC, or Clang), GNU Make, and Python 3. No packages
-or network access are needed.
+- A C Compiler
+- Make
+- Python 3
 
-```sh
-make run N=1
-make test N=1
+## How to work with this repo
+
+Exercises are located in [./exercises/](./exercises/). Each exercise is accompanied by an `.md`, which explains the problem in more detail, and even gives you some test cases for you to try it. Your job is to implement the corresponding function in each `.c` file.
+Each `.c` file also contains a `main` function that you can use to play around and test your code before running the real tests.
+
+> [!TIP]
+> If you're feeling bold, try doing each exercise without reading the `.md` first.
+
+Here are the commands you need:
+
+```bash
+make run N=1        # Run your `main` function in exercise 1
+make test N=1       # Run the tests for exercise 1
 ```
 
-Read `exercises/01.md`, edit `exercises/01.c`, and use its `main` as your
-playground. Tests use their own `main`; leave your playground inside the
-`#ifndef EXERCISE_TEST` guard. Keep trying until the tests pass, then move on.
-Select exercises with unpadded numbers: `N=1` through `N=50`.
+You can append `V=1` to the above commands if you wanna see the full compile command from Make. \
+You can also append `SANITIZE=1` to run the `main`/tests with sanitizers on. It can be useful to help you debug your programs.
 
-Compilation commands are hidden by default. Add `V=1` to show them:
+In root of the repo, there is a `lib.{c,h}` file. You can put your function declarations/definitions on them for global reuse on all tests. After you finish an exercise, if you find the function you implemented useful and want to reuse it, **move** the definition from the exercise to the `lib.c` and write it's declaration on `lib.h`.
 
-```sh
-make test N=1 V=1
-```
+You can view the full index of exercises in [./exercises/README.md](./exercises/README.md).
 
-Compiler warnings, errors, and test output are always visible.
+## AI Disclosure
 
-Test output shows only failing cases and the overall summary. Failures include
-the input, expected and actual values: escaped strings, byte dumps with ASCII, integer arrays,
-binary/hexadecimal integers, and buffer-relative pointer offsets where useful.
-Boolean results show only `true` or `false`, without byte or hexadecimal output.
-Comparisons follow the function contract (for example, string comparison checks
-the sign, not an implementation-specific return value).
-
-```sh
-make test N=23 SANITIZE=1  # AddressSanitizer + undefined-behavior checks
-make check               # Syntax/type-check every playground and test suite
-make build               # Build all 100 executables; does not run student tests
-make selftest            # Check test infrastructure, not student solutions
-```
-
-Tests time out after 5 seconds; override with `TEST_TIMEOUT=10 make test N=50`.
-A crashing exercise is reported as a failure, not as a successful test run.
-Crashes and timeouts also show the active case's input. Compiler and sanitizer
-diagnostics remain visible.
-Sanitizer support depends on your compiler/platform. Build output lives under
-`build/`; `make clean` removes only that generated directory. Override the
-compiler with `make CC=clang ...`.
-
-## Editor / language-server setup
-
-Open the repository root as your editor's workspace. `compile_flags.txt` tells
-clangd to use C11 and the same project include directories as the Makefile, so
-it can find `lib.h`, `exercises.h`, and the types provided by those headers
-(including `uint32_t` from `<stdint.h>`).
-
-If the editor was already open, restart its C language server or reload the
-workspace. For another language server, configure C11 and include paths for
-the repository root, `include/`, and `tests/` if it does not read this file.
-
-## Reuse your work
-
-`lib.c` is linked into **every** playground and test executable. Declare reusable
-helpers in `lib.h`, and include that header wherever needed. Earlier helpers are
-allowed in every exercise unless its Markdown says otherwise. Do not call the
-standard-library equivalent of the function you are implementing.
-
-To reuse a completed exercise, move its implementation (not its `main`) into
-`lib.c` and leave its declaration in `include/exercises.h`. Remove the definition
-from the original exercise file and include `lib.h` there. Both the old exercise
-and later ones will then link against the shared implementation. Never leave
-two definitions of the same function. The tests continue to check old exercises.
-
-## Contracts and learning progression
-
-- Exercises 1–10 explicitly explain boundary cases.
-- Exercises 11–15 still give boundary examples.
-- Exercises 16–30 mention that additional cases exist, without listing them.
-- Exercises 31–50 no longer mention them; discover them through test feedback.
-
-Requirements such as ownership, valid input ranges, and error handling remain
-explicit throughout. Tests never demand a particular result for undefined
-behavior. Standard-like functions follow their documented subset; character
-classification is deliberately ASCII-only. `my_strdup` is a familiar extension
-(and part of C23), not an ISO C11 function. `next_token` is a custom interface.
-
-Allocation exercises may use real `malloc`, `realloc`, and `free` as documented.
-Writing a heap allocator is outside this course. The goal is correctness first,
-not matching the performance of an optimized system libc.
-
-## Exercise map
-
-See the [full numbered index](exercises/README.md) for links to every task.
-
-| Stage | Exercises | Focus                                        |
-| ----- | --------- | -------------------------------------------- |
-| 1     | 01–10     | Logic, ASCII, integers, first pointers       |
-| 2     | 11–20     | Strings and pointer traversal                |
-| 3     | 21–30     | Raw memory, searching, tokenization          |
-| 4     | 31–40     | Parsing, allocation, ownership               |
-| 5     | 41–50     | Bits, byte order, callbacks, containers, I/O |
-
-Each numbered Markdown file gives the signature, requirements, library
-restrictions, and examples. Each C file is an independently buildable playground.
-
-## About the tests
-
-Tests check behavior, not your source-code choices: follow the stated algorithm,
-reuse, and library restrictions yourself. Passing the provided checks is useful
-feedback, not a proof of correctness. Sanitizers can catch memory errors that
-ordinary output comparisons cannot. Allocation failure and I/O failure handling
-are required by the contracts, but real resource failures are not forced by the
-default suites; size-overflow rejection is checked where practical.
+The idea of this playground, structure of the exercises, amount of information given and how to run the tests was made all by myself. \
+I used AI to write all of the tests and exercises tho. I do not respect the C language enough to want to do all of this by myself, sorry </3
