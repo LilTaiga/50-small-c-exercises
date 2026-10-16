@@ -12,7 +12,6 @@ size_t my_strspn(const char *s, const char *accepted)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("span = %zu\n", my_strspn("123abc", "0123456789"));
     return 0;
 }
 #endif

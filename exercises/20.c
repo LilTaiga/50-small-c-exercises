@@ -11,9 +11,6 @@ void reverse_string(char *s)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[] = "hello";
-    reverse_string(text);
-    printf("%s\n", text);
     return 0;
 }
 #endif

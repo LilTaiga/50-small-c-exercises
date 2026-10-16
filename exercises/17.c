@@ -12,7 +12,6 @@ int my_strncmp(const char *a, const char *b, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("comparison = %d\n", my_strncmp("hello", "help", 3));
     return 0;
 }
 #endif

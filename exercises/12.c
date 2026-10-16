@@ -12,9 +12,6 @@ char *my_strcpy(char *destination, const char *source)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[32] = "";
-    my_strcpy(text, "hello");
-    printf("text = \"%s\"\n", text);
     return 0;
 }
 #endif

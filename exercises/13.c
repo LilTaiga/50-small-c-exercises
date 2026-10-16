@@ -12,7 +12,6 @@ int my_strcmp(const char *a, const char *b)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("comparison = %d\n", my_strcmp("cat", "dog"));
     return 0;
 }
 #endif

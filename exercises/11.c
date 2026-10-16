@@ -12,7 +12,6 @@ size_t my_strlen(const char *s)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("length = %zu\n", my_strlen("hello"));
     return 0;
 }
 #endif

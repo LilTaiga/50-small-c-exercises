@@ -12,8 +12,6 @@ char *my_strstr(const char *haystack, const char *needle)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    const char *found = my_strstr("hello world", "world");
-    printf("suffix = %s\n", found ? found : "(not found)");
     return 0;
 }
 #endif

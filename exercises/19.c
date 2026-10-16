@@ -12,9 +12,6 @@ char *my_strncat(char *destination, const char *source, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[32] = "hello";
-    my_strncat(text, " C world", 2);
-    printf("%s\n", text);
     return 0;
 }
 #endif

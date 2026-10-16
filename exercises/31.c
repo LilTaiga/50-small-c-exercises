@@ -12,7 +12,6 @@ int my_atoi(const char *s)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("value = %d\n", my_atoi("  -42 cats"));
     return 0;
 }
 #endif

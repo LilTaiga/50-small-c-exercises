@@ -13,9 +13,6 @@ char *my_strdup(const char *s)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char *copy = my_strdup("hello");
-    printf("copy = %s\n", copy ? copy : "(allocation failed)");
-    free(copy);
     return 0;
 }
 #endif

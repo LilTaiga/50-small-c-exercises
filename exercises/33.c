@@ -12,9 +12,6 @@ int int_to_string(int value, char *destination, size_t capacity)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[64] = "";
-    int status = int_to_string(-42, text, sizeof text);
-    printf("status=%d, text=\"%s\"\n", status, text);
     return 0;
 }
 #endif

@@ -20,10 +20,6 @@ void string_split_free(char **strings, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    size_t count = 0;
-    char **fields = string_split("red,green,blue", ',', &count);
-    printf("fields = %zu\n", count);
-    string_split_free(fields, count);
     return 0;
 }
 #endif

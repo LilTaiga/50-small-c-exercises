@@ -12,9 +12,6 @@ ParseResult parse_int(const char *s, int *result)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    int value = 0;
-    ParseResult status = parse_int("-42", &value);
-    printf("status=%d, value=%d\n", (int)status, value);
     return 0;
 }
 #endif

@@ -12,7 +12,6 @@ unsigned bit_count(unsigned value)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("bits in 0xA5 = %u\n", bit_count(0xA5u));
     return 0;
 }
 #endif

@@ -13,10 +13,6 @@ char *string_join(const char *const *strings, size_t count, const char *separato
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    const char *words[] = {"red", "green", "blue"};
-    char *joined = string_join(words, 3, ", ");
-    printf("joined = %s\n", joined ? joined : "(no result)");
-    free(joined);
     return 0;
 }
 #endif

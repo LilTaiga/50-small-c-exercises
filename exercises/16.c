@@ -12,9 +12,6 @@ char *my_strcat(char *destination, const char *source)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[32] = "hello";
-    my_strcat(text, " C");
-    printf("%s\n", text);
     return 0;
 }
 #endif

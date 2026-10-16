@@ -12,9 +12,6 @@ char *my_strncpy(char *destination, const char *source, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[8] = {0};
-    my_strncpy(text, "hello", 7);
-    printf("%s\n", text);
     return 0;
 }
 #endif

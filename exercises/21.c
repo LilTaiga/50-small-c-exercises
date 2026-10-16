@@ -12,9 +12,6 @@ void *my_memset(void *destination, int value, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[] = "hello";
-    my_memset(text, '*', 3);
-    printf("%s\n", text);
     return 0;
 }
 #endif

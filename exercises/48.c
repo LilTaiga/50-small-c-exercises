@@ -20,10 +20,6 @@ void list_free(IntNode *head)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    IntNode *head = NULL;
-    int status = list_push_back(&head, 42);
-    printf("status=%d, head=%s\n", status, head ? "present" : "NULL");
-    list_free(head);
     return 0;
 }
 #endif

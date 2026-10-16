@@ -13,10 +13,6 @@ int vector_push(IntVector *vector, int value)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    IntVector vector = {0};
-    int status = vector_push(&vector, 42);
-    printf("status=%d, length=%zu\n", status, vector.length);
-    free(vector.data);
     return 0;
 }
 #endif

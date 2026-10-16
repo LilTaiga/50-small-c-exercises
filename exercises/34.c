@@ -12,9 +12,6 @@ ParseResult parse_uint_base(const char *s, unsigned base, unsigned *result)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    unsigned value = 0;
-    ParseResult status = parse_uint_base("FF", 16, &value);
-    printf("status=%d, value=%u\n", (int)status, value);
     return 0;
 }
 #endif

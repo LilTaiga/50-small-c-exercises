@@ -12,7 +12,6 @@ size_t my_strcspn(const char *s, const char *rejected)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    printf("span = %zu\n", my_strcspn("hello,world", ",;"));
     return 0;
 }
 #endif

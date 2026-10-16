@@ -13,9 +13,6 @@ char *string_slice(const char *s, size_t start, size_t length)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char *slice = string_slice("hello world", 6, 5);
-    printf("slice = %s\n", slice ? slice : "(no slice)");
-    free(slice);
     return 0;
 }
 #endif

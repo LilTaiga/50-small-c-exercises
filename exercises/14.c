@@ -12,8 +12,6 @@ char *my_strchr(const char *s, int c)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    const char *found = my_strchr("banana", 'n');
-    printf("suffix = %s\n", found ? found : "(not found)");
     return 0;
 }
 #endif

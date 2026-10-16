@@ -13,16 +13,6 @@ int read_line(FILE *stream, char **line, size_t *length)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    FILE *stream = tmpfile();
-    if (!stream) return 1;
-    fputs("hello world\n", stream);
-    rewind(stream);
-    char *line = NULL;
-    size_t length = 0;
-    int status = read_line(stream, &line, &length);
-    printf("status=%d, length=%zu, line=%s\n", status, length, line ? line : "(none)");
-    free(line);
-    fclose(stream);
     return 0;
 }
 #endif

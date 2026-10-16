@@ -12,9 +12,6 @@ void *my_memcpy(void *destination, const void *source, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    char text[6] = {0};
-    my_memcpy(text, "hello", 6);
-    printf("%s\n", text);
     return 0;
 }
 #endif

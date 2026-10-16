@@ -13,10 +13,6 @@ int buffer_append(ByteBuffer *buffer, const void *data, size_t count)
 #ifndef EXERCISE_TEST
 int main(void)
 {
-    ByteBuffer buffer = {0};
-    int status = buffer_append(&buffer, "hello", 5);
-    printf("status=%d, bytes=%zu\n", status, buffer.length);
-    free(buffer.data);
     return 0;
 }
 #endif
