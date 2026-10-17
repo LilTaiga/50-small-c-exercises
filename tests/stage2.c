@@ -47,7 +47,7 @@ void run_tests(void)
     char s[] = "banana";
     const int targets[] = {'b', 'a', 'n', 'x', '\0'};
     for (size_t i = 0; i < sizeof targets / sizeof *targets; ++i) {
-        char label[80]; snprintf(label, sizeof label, "string=\"banana\", target=%d (0x%02X)", targets[i], targets[i]); CASE(label);
+        CHAR_CASE("string=\"banana\", target", targets[i]);
 #if EXERCISE == 14
         POINTER(s, sizeof s, strchr(s, targets[i]), my_strchr(s, targets[i]));
 #else

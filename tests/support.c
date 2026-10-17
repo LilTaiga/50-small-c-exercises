@@ -37,6 +37,19 @@ static void character(unsigned char c)
     }
 }
 
+static void character_value(intmax_t value)
+{
+    if (value >= 0 && (uintmax_t)value <= UCHAR_MAX) {
+        putchar('\'');
+        character((unsigned char)value);
+        printf("' (0x%02" PRIXMAX ")", (uintmax_t)value);
+    } else {
+        /* Character-conversion exercises also accept ints outside byte range.
+         * Keep their full value visible instead of truncating it to a char. */
+        printf("%" PRIdMAX " (0x%" PRIXMAX ", outside byte range)", value, (uintmax_t)value);
+    }
+}
+
 static void quoted(const char *s)
 {
     if (!s) { fputs("NULL", stdout); return; }
@@ -45,6 +58,14 @@ static void quoted(const char *s)
     for (; i < 128 && s[i]; ++i) character((unsigned char)s[i]);
     putchar('"');
     if (i == 128) fputs("... (display limited to 128 bytes)", stdout);
+}
+
+void test_character_case(const char *label, intmax_t value)
+{
+    printf("\n  Case %zu | input: %s=", ++cases, label);
+    character_value(value);
+    putchar('\n');
+    fflush(stdout);
 }
 
 void test_string_case(const char *input)
@@ -86,16 +107,22 @@ void expect_bool(bool expected, bool actual, const char *expression, int line)
            expected ? "true" : "false", actual ? "true" : "false");
 }
 
+void expect_char(intmax_t expected, intmax_t actual, const char *expression, int line)
+{
+    ++checks;
+    if (expected == actual) return;
+    failure(expression, line);
+    fputs("      expected: ", stdout); character_value(expected);
+    fputs("\n      actual:   ", stdout); character_value(actual);
+    putchar('\n');
+}
+
 void expect_int(intmax_t expected, intmax_t actual, const char *expression, int line)
 {
     ++checks;
     if (expected == actual) return;
     failure(expression, line);
-    printf("      expected: %" PRIdMAX, expected);
-    if (expected >= 0 && expected <= 255) { fputs(" (byte '", stdout); character((unsigned char)expected); printf("', 0x%02" PRIXMAX ")", (uintmax_t)expected); }
-    printf("\n      actual:   %" PRIdMAX, actual);
-    if (actual >= 0 && actual <= 255) { fputs(" (byte '", stdout); character((unsigned char)actual); printf("', 0x%02" PRIXMAX ")", (uintmax_t)actual); }
-    putchar('\n');
+    printf("      expected: %" PRIdMAX "\n      actual:   %" PRIdMAX "\n", expected, actual);
 }
 
 static void unsigned_value(uintmax_t value)
@@ -148,8 +175,11 @@ void expect_string(const char *expected, const char *actual, const char *express
     if (expected && actual) {
         size_t i = 0;
         while (expected[i] && actual[i] && expected[i] == actual[i]) ++i;
-        printf("      first differing byte: %zu (expected 0x%02X, actual 0x%02X)\n",
-               i, (unsigned)(unsigned char)expected[i], (unsigned)(unsigned char)actual[i]);
+        printf("      first differing byte: %zu (expected ", i);
+        character_value((unsigned char)expected[i]);
+        fputs(", actual ", stdout);
+        character_value((unsigned char)actual[i]);
+        puts(")");
     }
 }
 

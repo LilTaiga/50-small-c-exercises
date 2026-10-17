@@ -31,6 +31,26 @@ int main(void)
         BOOL(true, 17); BOOL(true, -9); BOOL(false, 0); TRUE(-1);
         return test_summary();
     }
+    if (!strcmp(mode, "char-fail")) {
+        CHAR('A', 'B'); CHAR('\n', '\t'); CHAR('\0', 0xFF);
+        CHAR('\'', '\\'); CHAR('"', 0x7F); CHAR(256, 0); CHAR(-1, 255);
+        return test_summary();
+    }
+    if (!strcmp(mode, "char-pass")) {
+        CHAR('A', 'A'); CHAR('\0', 0); CHAR(-1, -1); CHAR(256, 256);
+        return test_summary();
+    }
+    if (!strcmp(mode, "char-input")) {
+        CHAR_CASE("character", 'A'); INT(1, 2);
+        CHAR_CASE("character", '\n'); INT(1, 2);
+        CHAR_CASE("character", 0xFF); INT(1, 2);
+        CHAR_CASE("character", -1); INT(1, 2);
+        return test_summary();
+    }
+    if (!strcmp(mode, "int-fail")) {
+        INT(65, 66); INT(0, 1);
+        return test_summary();
+    }
     if (!strcmp(mode, "mixed")) {
         CASE("passing before"); INT(1, 1);
         CASE("failing middle"); INT(1, 2); INT(3, 4);
@@ -57,7 +77,7 @@ int main(void)
     if (!strcmp(mode, "fail")) {
         unsigned char actual[] = {0x41, 0, 0xFF}, expected[] = {0x42, 0x0A, 0x7F};
         int a[] = {1, 2, 3}, b[] = {1, 9, 3};
-        INT('A', 'B'); UINT(0xA5, 0xF0); STRING("a\n\t\\\"", "a\r\x01");
+        CHAR('A', 'B'); UINT(0xA5, 0xF0); STRING("a\n\t\\\"", "a\r\x01");
         BYTES(expected, actual, 3); ARRAY(a, b, 3);
         POINTER(actual, sizeof actual, actual + 1, actual + 2);
         POINTER(actual, sizeof actual, NULL, actual);

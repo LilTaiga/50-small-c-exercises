@@ -12,9 +12,7 @@ void run_tests(void)
                           '_', '`', 'a', 'm', 'z', '{', 127, 128, 255, 256, INT_MAX};
     for (size_t i = 0; i < sizeof inputs / sizeof *inputs; ++i) {
         int c = inputs[i];
-        char label[80];
-        snprintf(label, sizeof label, "ASCII integer %d (0x%X)", c, (unsigned)c);
-        CASE(label);
+        CHAR_CASE("ASCII character", c);
 #if EXERCISE == 1
         BOOL(c >= '0' && c <= '9', my_isdigit(c));
 #elif EXERCISE == 2
@@ -24,9 +22,9 @@ void run_tests(void)
 #elif EXERCISE == 4
         BOOL(c == ' ' || (c >= '\t' && c <= '\r'), my_isspace(c));
 #elif EXERCISE == 5
-        INT(c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c, my_toupper(c));
+        CHAR(c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c, my_toupper(c));
 #else
-        INT(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c, my_tolower(c));
+        CHAR(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c, my_tolower(c));
 #endif
     }
 }

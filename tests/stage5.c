@@ -168,7 +168,7 @@ static void expect_line(FILE *stream, const void *expected, size_t count, int st
     INT(status, read_line(stream, &line, &length)); UINT(count, length);
     if (status == 1) {
         BYTES(expected, line, count); TRUE(line != NULL);
-        if (line && length == count) INT(0, (unsigned char)line[count]);
+        if (line && length == count) CHAR('\0', (unsigned char)line[count]);
     } else POINTER(NULL, 0, NULL, line);
     free(line);
 }

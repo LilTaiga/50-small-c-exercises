@@ -45,6 +45,33 @@ contains 'expected: false'
 contains 'actual:   true'
 for marker in byte 0x 0b; do absent "$marker"; done
 
+run_case 0 char-pass
+contains 'PASS: 4/4 checks'
+absent 'Case '
+run_case 1 char-fail
+contains "expected: 'A' (0x41)"
+contains "actual:   'B' (0x42)"
+contains "expected: '\n' (0x0A)"
+contains "actual:   '\t' (0x09)"
+contains "expected: '\0' (0x00)"
+contains "actual:   '\xFF' (0xFF)"
+contains "expected: '\'' (0x27)"
+contains "actual:   '\\\\' (0x5C)"
+contains "actual:   '\x7F' (0x7F)"
+contains '256 (0x100, outside byte range)'
+contains 'outside byte range'
+contains 'FAIL: 0/7 checks'
+absent '65 (byte'
+run_case 1 char-input
+contains "input: character='A' (0x41)"
+contains "input: character='\n' (0x0A)"
+contains "input: character='\xFF' (0xFF)"
+contains 'input: character=-1 ('
+run_case 1 int-fail
+contains 'expected: 65'
+contains 'actual:   66'
+for marker in "'A'" byte 0x 0b; do absent "$marker"; done
+
 run_case 1 mixed
 contains 'input: failing middle'
 contains 'FAIL: 2/4 checks passed across 4 cases.'
@@ -57,6 +84,7 @@ contains 'input: "a\nb\t\"\\"'
 contains 'a="\xFF", b="\x7F"'
 contains 'a="a\nb", b="a\tb", count=2'
 run_case 1 fail
+contains "first differing byte: 1 (expected '\n' (0x0A), actual '\r' (0x0D))"
 for marker in 'expected:' 'actual:' "'A'" '0x41' '0b10100101' '42 0A 7F' '|B..|' \
     '[1, 9, 3]' 'buffer + 1' 'buffer + 2' 'NULL' 'PARSE_OK (0)' 'PARSE_OVERFLOW (2)' \
     'FAIL: 0/12 checks' 'first differing byte: 79 (expected 0x00, actual 0xFF)' \
