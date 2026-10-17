@@ -1,7 +1,7 @@
 #include "exercises.h"
 #include "lib.h"
 
-/* Compare at most count bytes of two strings using unsigned-byte ordering. */
+/* Compare at most count bytes of the two strings. */
 int my_strncmp(const char *a, const char *b, size_t count) {
     (void)a;
     (void)b;

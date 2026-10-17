@@ -1,7 +1,7 @@
 #include "exercises.h"
 #include "lib.h"
 
-/* Count bytes before the terminating null byte. */
+/* Count how many characters the provided string has. */
 size_t my_strlen(const char *s) {
     (void)s;
     /* TODO: implement. */

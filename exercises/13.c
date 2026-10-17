@@ -1,7 +1,7 @@
 #include "exercises.h"
 #include "lib.h"
 
-/* Compare strings using unsigned-byte ordering; return a sign. */
+/* Compare the 2 strings lexicographically */
 int my_strcmp(const char *a, const char *b) {
     (void)a;
     (void)b;
