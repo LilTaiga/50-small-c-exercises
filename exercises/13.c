@@ -2,16 +2,13 @@
 #include "lib.h"
 
 /* Compare strings using unsigned-byte ordering; return a sign. */
-int my_strcmp(const char *a, const char *b)
-{
-    (void)a; (void)b;
+int my_strcmp(const char *a, const char *b) {
+    (void)a;
+    (void)b;
     /* TODO: implement. */
     return 0;
 }
 
 #ifndef EXERCISE_TEST
-int main(void)
-{
-    return 0;
-}
+int main(void) { return 0; }
 #endif

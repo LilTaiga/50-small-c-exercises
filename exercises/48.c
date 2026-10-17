@@ -3,23 +3,19 @@
 #include <stdlib.h>
 
 /* Allocate and append one node to a singly linked list. */
-int list_push_back(IntNode **head, int value)
-{
-    (void)head; (void)value;
+int list_push_back(IntNode **head, int value) {
+    (void)head;
+    (void)value;
     /* TODO: implement. */
     return -1;
 }
 
 /* Free all nodes without accessing them after release. */
-void list_free(IntNode *head)
-{
+void list_free(IntNode *head) {
     (void)head;
     /* TODO: implement. */
 }
 
 #ifndef EXERCISE_TEST
-int main(void)
-{
-    return 0;
-}
+int main(void) { return 0; }
 #endif
