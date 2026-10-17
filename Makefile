@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := help
 CC ?= cc
-PYTHON ?= python3
 V ?= 0
 Q := $(if $(filter 1,$(V)),,@)
 CPPFLAGS += -Iinclude -I. -Itests
@@ -27,15 +26,19 @@ endif
 
 TEST_SOURCES := tests/support.c tests/main.c $(wildcard tests/stage*.c)
 HEADERS := include/exercises.h lib.h tests/support.h
-.PHONY: help run test check build selftest clean FORCE
+.PHONY: help run test check build FORCE
 help:
-	@printf '%s\n' 'make run N=1       Run your playground main' 'make test N=1      Test your implementation' 'make check         Syntax/type-check all exercises and tests' 'make build         Build all playgrounds and test executables' 'make selftest      Check the testing infrastructure' 'Add V=1 to show compilation commands.' 'Add SANITIZE=1 to enable AddressSanitizer and UBSan.'
+	@printf '%s\n' 'make run N=1       Run your playground main' 'make test N=1      Test your implementation' 'make check         Syntax/type-check all exercises and tests' 'make build         Build all playgrounds and test executables' 'Add V=1 to show compilation commands.' 'Add SANITIZE=1 to enable AddressSanitizer and UBSan.'
 
 run: $(BUILD)/$(ID)-run
 	@./$<
 
-test: $(BUILD)/$(ID)-test
-	@$(PYTHON) tools/run_tests.py $<
+test: $(BUILD)/$(ID)-test $(BUILD)/test-runner
+	@$(BUILD)/test-runner $<
+
+$(BUILD)/test-runner: tools/run_tests.c FORCE
+	@mkdir -p $(BUILD)
+	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
 
 $(BUILD)/%-run: exercises/%.c lib.c $(HEADERS) FORCE
 	@mkdir -p $(BUILD)
@@ -46,6 +49,7 @@ $(BUILD)/%-test: exercises/%.c lib.c $(HEADERS) $(TEST_SOURCES) FORCE
 	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) -DEXERCISE_TEST -DEXERCISE=$(shell expr $* + 0) $< lib.c $(TEST_SOURCES) $(LDFLAGS) $(LDLIBS) -o $@
 
 check:
+	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) -fsyntax-only tools/run_tests.c
 	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) -fsyntax-only tests/framework_fixture.c tests/support.c
 	$(Q)set -e; for id in $(IDS); do \
 	  n=$$(expr $$id + 0); \
@@ -54,8 +58,4 @@ check:
 	done
 	@printf '%s\n' 'All 50 exercises and test suites passed syntax/type checking.'
 
-build: $(foreach id,$(IDS),$(BUILD)/$(id)-run $(BUILD)/$(id)-test)
-selftest:
-	$(PYTHON) tools/selftest.py
-clean:
-	$(PYTHON) -c 'import shutil; shutil.rmtree("build", ignore_errors=True)'
+build: $(BUILD)/test-runner $(foreach id,$(IDS),$(BUILD)/$(id)-run $(BUILD)/$(id)-test)
