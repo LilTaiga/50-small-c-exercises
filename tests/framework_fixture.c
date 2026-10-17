@@ -12,6 +12,17 @@ int main(void)
     if (!strcmp(mode, "crash")) { raise(SIGSEGV); return 2; }
     if (!strcmp(mode, "hang")) { for (;;) { } }
     if (!strcmp(mode, "exit")) return 7;
+    if (!strcmp(mode, "partial")) {
+        fputs("    FAIL line 0: output without a final newline", stdout);
+        return 1;
+    }
+    if (!strcmp(mode, "closed-output")) {
+        fclose(stdout);
+        for (;;) { }
+    }
+    if (!strcmp(mode, "flood")) {
+        for (;;) puts("output from a runaway implementation");
+    }
     if (!strcmp(mode, "bool-fail")) {
         BOOL(true, false); BOOL(false, 17); TRUE(0);
         return test_summary();

@@ -7,6 +7,7 @@ It comes with prepared exercises and a testing suite for ease running and testin
 
 - A C Compiler
 - Make
+- Linux or Mac
 
 ## How to work with this repo
 
